@@ -1,0 +1,57 @@
+name: Deploy React Vite Project to VPS
+
+on:
+  push:
+    branches:
+      - main # Trigger the workflow on push to the main branch
+
+jobs:
+  deploy:
+    name: Deploy to VPS
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18' # Specify the Node.js version
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build project
+      run: npm run build
+
+    - name: Generate SSH Key
+      run: |
+        ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_rsa -N "" -C "github-actions@github.com"
+        cat ~/.ssh/id_rsa.pub
+      shell: bash
+
+    - name: Add Public Key to VPS (Manual Step)
+      run: |
+        echo "Add the following public key to the VPS's ~/.ssh/authorized_keys file:"
+        echo "$(cat ~/.ssh/id_rsa.pub)"
+      shell: bash
+
+    - name: Deploy to VPS
+      run: |
+        REMOTE_PATH="/var/www/projecto"
+        
+        # Create project directory and deploy files
+        ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
+          sudo mkdir -p $REMOTE_PATH
+          sudo chown $USER:$USER $REMOTE_PATH
+          sudo rm -rf $REMOTE_PATH/*
+        EOF
+        scp -r ./dist/* ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:$REMOTE_PATH
+
+        # Restart NGINX
+        ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
+          sudo systemctl restart nginx
+        EOF
+      shell: bash

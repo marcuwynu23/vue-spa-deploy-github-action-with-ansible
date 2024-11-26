@@ -26,18 +26,6 @@ jobs:
     - name: Build project
       run: npm run build
 
-    - name: Generate SSH Key
-      run: |
-        ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_rsa -N "" -C "github-actions@github.com"
-        cat ~/.ssh/id_rsa.pub
-      shell: bash
-
-    - name: Add Public Key to VPS (Manual Step)
-      run: |
-        echo "Add the following public key to the VPS's ~/.ssh/authorized_keys file:"
-        echo "$(cat ~/.ssh/id_rsa.pub)"
-      shell: bash
-
     - name: Deploy to VPS
       run: |
         REMOTE_PATH="/var/www/projecto"

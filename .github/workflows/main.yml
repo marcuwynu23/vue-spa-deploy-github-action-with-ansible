@@ -30,7 +30,7 @@ jobs:
       run: |
        # Test SSH Connection
         echo "Testing connection to VPS..."
-        ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "echo 'Test VPS connection successful'"
+        ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "echo 'Test VPS connection successful'"
         EOF
       shell: bash
 

@@ -26,6 +26,14 @@ jobs:
     - name: Build project
       run: npm run build
 
+    - name: Test VPS Connection
+      run: |
+       # Test SSH Connection
+        echo "Testing connection to VPS..."
+        ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "echo 'Test VPS connection successful'"
+        EOF
+      shell: bash
+
     - name: Deploy to VPS
       run: |
         REMOTE_PATH="/var/www/projecto"

@@ -27,11 +27,7 @@ jobs:
       run: npm run build
 
     - name: Test VPS Connection
-      run: |
-       # Test SSH Connection
-        echo "Testing connection to VPS..."
-        ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "echo 'Test VPS connection successful'"
-        EOF
+      run: ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "echo 'Test VPS connection successful'"
       shell: bash
 
     - name: Deploy to VPS

@@ -18,11 +18,9 @@ jobs:
           echo "VPS_SSH_KEY: [MASKED]"  # Avoid printing the private key
 
       - name: Test SSH Connection
-        uses: appleboy/ssh-action@v1.0.0
+        uses: garygrossgarten/github-action-ssh@release
         with:
+          command: "uname -a"
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
-          key: "${{ secrets.VPS_SSH_KEY }}"
-          script: |
-            echo "✅ Successfully connected to VPS"
-            uname -a  # Print system details for verification
+          privateKey: ${{ secrets.VPS_SSH_KEY }}

@@ -1,10 +1,8 @@
 name: Deploy to VPS
 
 on:
-  workflow_dispatch:
-  # push:
-  #   branches:
-  #     - main  # Runs when changes are pushed to the main branch
+  workflow_dispatch:  # Allows manual execution
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -12,6 +10,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+
+      - name: Print Secret Variables (Masked)
+        run: |
+          echo "VPS_HOST: ${{ secrets.VPS_HOST }}"
+          echo "VPS_USER: ${{ secrets.VPS_USER }}"
+          echo "VPS_SSH_KEY: [MASKED]"  # Avoid printing the private key
 
       - name: Test SSH Connection
         uses: appleboy/ssh-action@v1.0.0

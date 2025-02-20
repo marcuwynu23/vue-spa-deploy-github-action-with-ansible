@@ -18,7 +18,7 @@ jobs:
           echo "VPS_USER: ${{ secrets.VPS_USER }}"
           echo "VPS_SSH_KEY: [MASKED]"  # Avoid printing the private key
 
-      - name: Test SSH Connection
+      - name: Publish Frontend App
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -26,5 +26,11 @@ jobs:
           key: "${{ secrets.VPS_SSH_KEY }}"
           key_path: "./private_key"
           script: |
-            echo "✅ Successfully connected to VPS"
-            uname -a
+            cd ~/dev/app
+            git pull origin main
+            npm install
+            npm run build
+            cp -r build/* /var/www/test
+            sudo systemctl restart nginx
+            
+

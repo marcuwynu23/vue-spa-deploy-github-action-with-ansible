@@ -1,0 +1,26 @@
+name: Deploy to Frontend App
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Run Ansible Playbook from `.ansible/`
+        uses: ansible/ansible-runner-action@v2
+        with:
+          playbook: .ansible/deploy.yml # Path to the playbook inside repo
+          inventory: .ansible/inventory.ini # Path to inventory inside repo
+          extra_vars: |
+            app_name: "test"
+            repo_url: "git@github.com:${{ github.repository }}.git"
+            branch: "${{ github.ref_name }}"
+        env:
+          ANSIBLE_HOST_KEY_CHECKING: "False"
+          ANSIBLE_FORCE_COLOR: "True"

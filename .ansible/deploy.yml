@@ -49,8 +49,16 @@
       args:
         chdir: "/var/www/{{ app_name }}"
 
+    - name: Determine build command based on branch
+      set_fact:
+        build_command: "{{ 'npm run build:release' if branch == 'main' else 'npm run build:debug' }}"
+
+    - name: Debug - Print Build Command
+      debug:
+        msg: "Executing Build Command: {{ build_command }}"
+
     - name: Build the project
-      command: npm run build
+      command: "{{ build_command }}"
       args:
         chdir: "/var/www/{{ app_name }}"
 

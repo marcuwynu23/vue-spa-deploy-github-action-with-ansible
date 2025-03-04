@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
+    "build:release": "vue-tsc -b && vite build --outDir production/release",
+    "build:debug": "vue-tsc -b && vite build --outDir production/debug",
     "preview": "vite preview"
   },
   "dependencies": {

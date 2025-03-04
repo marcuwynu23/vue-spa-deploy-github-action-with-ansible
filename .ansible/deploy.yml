@@ -1,5 +1,5 @@
 ---
-- name: SaaS Deployment
+- name: Deploy App
   hosts: local
   become: yes
   vars:

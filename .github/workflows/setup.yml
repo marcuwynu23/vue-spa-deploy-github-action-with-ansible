@@ -1,10 +1,7 @@
 name: Setup Deployment
 
 on:
-  push:
-    branches:
-      - main
-      - develop
+  workflow_dispatch: # Enables manual trigger
 
 jobs:
   deploy:
@@ -23,6 +20,7 @@ jobs:
             if [ ! -d "~/projects/${{ github.repository }}" ]; then
               mkdir -p ~/projects/${{ github.repository }}
             fi
+
       - name: Copy `.ansible/` directory to VPS using SCP
         uses: appleboy/scp-action@v0.1.4
         with:

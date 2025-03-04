@@ -4,62 +4,72 @@
   become: yes
 
   vars:
-    domain_name: "{{ app_name }}" # Replace with your actual domain
+    domain_name: "{{ domain_name }}" # Replace with your actual domain
     email: "{{ email }}" # Used for Certbot SSL
     node_version: "18" # Change as needed
+    branch: "{{ app_branch }}"
+    project_location: "~/projects/{{ repositoryDirectory }}"
+    release_folder: "/var/www/{{ app_name }}/production/release"
+    debug_folder: "/var/www/{{ app_name }}/production/debug"
+    nginx_template: "{{ project_location }}/.nginx/template.conf.j2"
 
   tasks:
-    # Update & Upgrade System Packages
-    - name: Update and upgrade apt packages
-      apt:
-        update_cache: yes
-        upgrade: dist
+    # # Update & Upgrade System Packages
+    # - name: Update and upgrade apt packages
+    #   apt:
+    #     update_cache: yes
+    #     upgrade: dist
 
-    # Install Dependencies
-    - name: Install required system packages
-      apt:
-        name:
-          - curl
-          - git
-          - nginx
-          - ufw
-          - certbot
-          - python3-certbot-nginx
-        state: present
+    # # Install Dependencies
+    # - name: Install required system packages
+    #   apt:
+    #     name:
+    #       - curl
+    #       - git
+    #       - nginx
+    #       - ufw
+    #       - certbot
+    #       - python3-certbot-nginx
+    #     state: present
 
-    # Install Node.js & NPM
-    - name: Install Node.js & npm
-      shell: |
-        curl -fsSL https://deb.nodesource.com/setup_{{ node_version }}.x | bash -
-        apt-get install -y nodejs
-      args:
-        executable: /bin/bash
+    # # Install Node.js & NPM
+    # - name: Install Node.js & npm
+    #   shell: |
+    #     curl -fsSL https://deb.nodesource.com/setup_{{ node_version }}.x | bash -
+    #     apt-get install -y nodejs
+    #   args:
+    #     executable: /bin/bash
 
-    # Install PM2 globally
-    - name: Install PM2 globally
-      npm:
-        name: pm2
-        global: yes
-        state: present
+    # # Install PM2 globally
+    # - name: Install PM2 globally
+    #   npm:
+    #     name: pm2
+    #     global: yes
+    #     state: present
 
-    # Configure UFW Firewall (Allow Nginx, SSH, and Certbot)
-    - name: Allow Nginx Full in UFW
-      ufw:
-        rule: allow
-        name: "Nginx Full"
+    # # Configure UFW Firewall (Allow Nginx, SSH, and Certbot)
+    # - name: Allow Nginx Full in UFW
+    #   ufw:
+    #     rule: allow
+    #     name: "Nginx Full"
 
-    - name: Allow OpenSSH in UFW
-      ufw:
-        rule: allow
-        name: "OpenSSH"
+    # - name: Allow OpenSSH in UFW
+    #   ufw:
+    #     rule: allow
+    #     name: "OpenSSH"
 
-    - name: Enable UFW firewall
-      ufw:
-        state: enabled
+    # - name: Enable UFW firewall
+    #   ufw:
+    #     state: enabled
+
+    # Dynamically Set Nginx Configuration
+    - name: Set Nginx root directory based on branch
+      set_fact:
+        nginx_root: "{{ release_folder if branch == 'main' else debug_folder }}"
 
     - name: Create Nginx config file for the app
       template:
-        src: nginx.conf.j2
+        src: "{{ nginx_template }}"
         dest: "/etc/nginx/sites-available/{{ domain_name }}"
       notify: Restart Nginx
 
@@ -70,16 +80,16 @@
         state: link
       notify: Restart Nginx
 
-    # Obtain SSL Certificate with Certbot
-    - name: Obtain SSL certificate using Certbot
-      command: certbot --nginx -d {{ domain_name }} -m {{ email }} --agree-tos --non-interactive
-      notify: Restart Nginx
+    # # Obtain SSL Certificate with Certbot
+    # - name: Obtain SSL certificate using Certbot
+    #   command: certbot --nginx -d {{ domain_name }} -m {{ email }} --agree-tos --non-interactive
+    #   notify: Restart Nginx
 
-    - name: Ensure SSL auto-renewal is set up
-      cron:
-        name: Certbot Auto-Renewal
-        job: "certbot renew --quiet && systemctl reload nginx"
-        special_time: daily
+    # - name: Ensure SSL auto-renewal is set up
+    #   cron:
+    #     name: Certbot Auto-Renewal
+    #     job: "certbot renew --quiet && systemctl reload nginx"
+    #     special_time: daily
 
   handlers:
     - name: Restart Nginx

@@ -1,24 +1,16 @@
-
 server {
   listen 443 ssl;
-  server_name test.cloudmateria.com;
-  client_max_body_size 50M; 
+  server_name {{ domain_name }};
+  client_max_body_size 50M;
 
-
-  ; used this if production mode is normal
-  root /var/www/test/production/release;
-  ; use this if on staging mode
-  root /var/www/test/production/debug;
+  root {{ nginx_root }};
 
   location / {
     try_files $uri $uri/ /index.html;
   }
 
   location /static/ {
-    ; used this if production mode is normal
-    root /var/www/test/production/release;
-    ; use this if on staging mode
-    root /var/www/test/production/debug;
+    root {{ nginx_root }};
   }
 
   error_page 404 /index.html;

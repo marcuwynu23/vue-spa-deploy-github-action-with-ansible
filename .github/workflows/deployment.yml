@@ -39,7 +39,7 @@ jobs:
           key: "${{ secrets.VPS_SSH_KEY }}"
           script: |
             cd ~/ansible-playbook/${{ github.repository }}
-            ansible-playbook -i ./ansible/inventory.ini ./ansible/deploy.yml \
+            ansible-playbook -i .ansible/inventory.ini .ansible/deploy.yml \
               --extra-vars "app_name=test \
                             repo_url=git@github.com:${{ github.repository }}.git \
                             branch=${{ github.ref_name }}"

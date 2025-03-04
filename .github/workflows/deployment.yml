@@ -42,6 +42,6 @@ jobs:
           script: |
             cd ~/projects/${{ github.repository }}
             ansible-playbook -i .ansible/inventory.ini .ansible/deploy.yml \
-              --extra-vars "app_name=test \
+              --extra-vars "app_name=${{ vars.APP_NAME }} \
                             repo_url=git@github.com:${{ github.repository }}.git \
                             branch=${{ github.ref_name }}"

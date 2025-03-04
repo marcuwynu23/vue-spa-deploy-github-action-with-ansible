@@ -12,9 +12,24 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
+      - name: Ensure target directory exists on VPS
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: "${{ secrets.VPS_SSH_KEY }}"
+          script: |
+            mkdir -p ~/ansible-playbook/${{ github.repository }}
+
       - name: Copy `.ansible/` directory to VPS using SCP
-        run: |
-          scp -r -o StrictHostKeyChecking=no .ansible ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:~/ansible/${{ github.repository }}
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: "${{ secrets.VPS_SSH_KEY }}"
+          source: ".ansible"
+          target: "~/ansible-playbook/${{ github.repository }}"
+          overwrite: true
 
       - name: Run Ansible Playbook on VPS via SSH
         uses: appleboy/ssh-action@v1.0.0
@@ -23,7 +38,7 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: "${{ secrets.VPS_SSH_KEY }}"
           script: |
-            cd ~/ansible/${{ github.repository }}
+            cd ~/ansible-playbook/${{ github.repository }}
             ansible-playbook -i inventory.ini deploy.yml \
               --extra-vars "app_name=test \
                             repo_url=git@github.com:${{ github.repository }}.git \

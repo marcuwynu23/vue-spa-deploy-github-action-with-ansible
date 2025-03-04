@@ -43,5 +43,5 @@ jobs:
               --extra-vars "app_name=test \
                             domain_name=${{ vars.DOMAIN_NAME }} \
                             repo_url=git@github.com:${{ github.repository }}.git \
-                            branch=${{ github.ref_name }}" \
-                            repositoryDirectory=${{ github.repository }}
+                            branch=${{ github.ref_name }} \
+                            repositoryDirectory=${{ github.repository }}"

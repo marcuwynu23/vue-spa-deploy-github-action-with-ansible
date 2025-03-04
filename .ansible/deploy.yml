@@ -1,6 +1,6 @@
 ---
 - name: SaaS Deployment
-  hosts: vps
+  hosts: local
   become: yes
   vars:
     app_name: "{{ app_name }}"

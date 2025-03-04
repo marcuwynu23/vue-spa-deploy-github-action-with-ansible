@@ -1,10 +1,10 @@
-name: Setup Deployment
+name: Setup Deployment Requirements
 
 on:
   workflow_dispatch: # Enables manual trigger
 
 jobs:
-  deploy:
+  setup:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository

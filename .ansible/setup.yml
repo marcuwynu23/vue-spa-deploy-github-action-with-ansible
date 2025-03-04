@@ -63,20 +63,42 @@
     #     state: enabled
 
     # Dynamically Set Nginx Configuration
-    - name: Set Nginx root directory based on branch
+    - name: Set Nginx configuration paths
       set_fact:
-        nginx_root: "{{ release_folder if branch == 'main' else debug_folder }}"
+        production_nginx_root: "{{ release_folder }}"
+        staging_nginx_root: "{{ debug_folder }}"
+        production_nginx_config: "{{ domain_name }}"
+        staging_nginx_config: "staging-{{ domain_name }}"
 
-    - name: Create Nginx config file for the app
+    - name: Create Nginx config file for Production
       template:
         src: "{{ nginx_template }}"
-        dest: "/etc/nginx/sites-available/{{ domain_name }}"
+        dest: "/etc/nginx/sites-available/{{ production_nginx_config }}"
+      vars:
+        nginx_root: "{{ production_nginx_root }}"
+        server_name: "{{ domain_name }}"
       notify: Restart Nginx
 
-    - name: Enable Nginx site
+    - name: Enable Nginx site for Production
       file:
-        src: "/etc/nginx/sites-available/{{ domain_name }}"
-        dest: "/etc/nginx/sites-enabled/{{ domain_name }}"
+        src: "/etc/nginx/sites-available/{{ production_nginx_config }}"
+        dest: "/etc/nginx/sites-enabled/{{ production_nginx_config }}"
+        state: link
+      notify: Restart Nginx
+
+    - name: Create Nginx config file for Staging
+      template:
+        src: "{{ nginx_template }}"
+        dest: "/etc/nginx/sites-available/{{ staging_nginx_config }}"
+      vars:
+        nginx_root: "{{ staging_nginx_root }}"
+        server_name: "staging-{{ domain_name }}"
+      notify: Restart Nginx
+
+    - name: Enable Nginx site for Staging
+      file:
+        src: "/etc/nginx/sites-available/{{ staging_nginx_config }}"
+        dest: "/etc/nginx/sites-enabled/{{ staging_nginx_config }}"
         state: link
       notify: Restart Nginx
 

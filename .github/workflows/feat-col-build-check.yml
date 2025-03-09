@@ -17,11 +17,10 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install Dependencies
-        run: npm install || { echo "Install Dependencies Failed." }
-
+        run: npm install || { echo "Install Dependencies Failed."; exit 1; }
       - name: Run Unit Tests
         id: prod-build-check
-        run: npm run build || { echo "Compiling Production Build Failed." }
+        run: npm run build || { echo "Compiling Production Build Failed."; exit 1; }
         env:
           NODE_ENV: test
 

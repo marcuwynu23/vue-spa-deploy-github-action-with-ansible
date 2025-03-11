@@ -3,7 +3,7 @@ name: "Run Nmap Scan"
 on:
   push:
     branches:
-      - main
+      - develop
   workflow_dispatch:
     inputs:
       target:

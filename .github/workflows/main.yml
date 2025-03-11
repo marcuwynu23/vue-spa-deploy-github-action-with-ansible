@@ -5,6 +5,11 @@ on:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      target:
+        description: "The domain or IP address to scan with Nmap"
+        required: true
+
 permissions:
   contents: read
   issues: write # ✅ Required for issue creation

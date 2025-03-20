@@ -39,7 +39,8 @@ jobs:
 
       - name: Build Vite App
         run: npm run build
-
+      - name: Disable Jekyll
+        run: touch build/.nojekyll
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v3
         with:

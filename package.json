@@ -8,13 +8,18 @@
     "build": "vue-tsc -b && vite build",
     "build:release": "vue-tsc -b && vite build --outDir production/release",
     "build:debug": "vue-tsc -b && vite build --outDir production/debug",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "cy:open": "cypress open",
+    "deploy:init": "gsudo python deployment.py init",
+    "deploy:publish": "gsudo python deployment.py publish",
+    "deploy:unpublish": "gsudo python deployment.py unpublish"
   },
   "dependencies": {
     "vue": "^3.5.12"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.1.4",
+    "cypress": "^14.1.0",
     "typescript": "~5.6.2",
     "vite": "^5.4.10",
     "vue-tsc": "^2.1.8"
